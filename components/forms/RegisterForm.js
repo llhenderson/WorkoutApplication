@@ -27,49 +27,59 @@ function RegisterForm() {
   };
 
   return (
-    <View style={{ bottom: "25%", left: "25%" }}>
-      <Text
-        style={{
-          color: "white",
-          left: "20%",
-          fontSize: 30,
-          fontFamily: "BebasNeue",
-        }}
-      >
-        REGISTER
-      </Text>
-      <TextInput
-        style={styles.input}
-        onChangeText={setUsername}
-        placeholder="username"
-        value={username}
-      />
-      <TextInput
-        style={styles.input}
-        onChangeText={setPassword}
-        value={password}
-        placeholder="password"
-        keyboardType="visible-password"
-      />
-      <TextInput
-        style={styles.input}
-        onChangeText={setEmail}
-        value={email}
-        placeholder="email"
-      />
-      <View style={{ width: "12%", left: "20%" }}>
-        <Button title="Submit" onPress={handleSubmit} />
+    <View style={styles.container}>
+      <Text style={styles.title}>Welcome</Text>
+      <View style={{ width: "80%" }}>
+        <TextInput
+          style={styles.input}
+          onChangeText={setUsername}
+          placeholder="username"
+          value={username}
+        />
+        <TextInput
+          style={styles.input}
+          onChangeText={setPassword}
+          value={password}
+          placeholder="password"
+          keyboardType="visible-password"
+        />
+        <TextInput
+          style={styles.input}
+          onChangeText={setEmail}
+          value={email}
+          placeholder="email"
+        />
+      </View>
+      <View style={{ width: "80%" }}>
+        <Button title="Register" onPress={handleSubmit} />
       </View>
     </View>
   );
 }
 const styles = StyleSheet.create({
-  input: {
+  container: {
+    flex: 1,
+    alignItems: "center",
     backgroundColor: "white",
-    height: 40,
-    borderWidth: 1,
+    padding: "5%",
+    borderRadius: 30,
+    margin: "5%",
+    marginTop: "40%", // Adjusted for better responsiveness
+    justifyContent: "space-between",
+  },
+  input: {
+    height: 50,
+    backgroundColor: "white",
+    borderWidth: 2,
+    borderColor: "red",
+    borderRadius: 5,
     padding: 10,
-    width: "50%",
+    marginVertical: 10,
+  },
+  title: {
+    fontSize: 60,
+    fontWeight: "900",
+    fontFamily: "BebasNeue",
   },
 });
 

@@ -12,36 +12,43 @@ function Homepage() {
   return (
     <ImageBackground
       style={styles.background}
-      source={require("../assets/images/Workout_Landing_Page.jpg")}
+      source={require("../assets/images/pexels-pixabay-260352.jpg")}
     >
+      <View style={styles.overlay} />
       <View style={styles.title}>
         <Text style={styles.titleText}>Workout Tracker</Text>
       </View>
 
       {userInput === "login" ? (
-        <LoginForm />
+        <>
+          <LoginForm />
+          <View>
+            <Text style={styles.link} onPress={() => setUserInput("reset")}>
+              Reset Password?
+            </Text>
+          </View>
+          <View style={styles.registerButton}>
+            <RegisterButton
+              title="REGISTER"
+              onPress={() => setUserInput("register")}
+            />
+          </View>
+        </>
       ) : userInput === "register" ? (
-        <RegisterForm />
+        <>
+          <RegisterForm />
+          <View>
+            <Text style={styles.link} onPress={() => setUserInput("reset")}>
+              Reset Password?
+            </Text>
+          </View>
+          <View style={styles.loginButton}>
+            <LoginButton title="LOGIN" onPress={() => setUserInput("login")} />
+          </View>
+        </>
       ) : (
         <RecoveryEmail />
       )}
-
-      <View>
-        <Text style={styles.link} onPress={() => setUserInput("reset")}>
-          Reset Password?
-        </Text>
-      </View>
-
-      <View style={styles.loginButton}>
-        <LoginButton title="LOGIN" onPress={() => setUserInput("login")} />
-      </View>
-
-      <View style={styles.registerButton}>
-        <RegisterButton
-          title="REGISTER"
-          onPress={() => setUserInput("register")}
-        />
-      </View>
     </ImageBackground>
   );
 }
@@ -72,6 +79,10 @@ const styles = StyleSheet.create({
     color: "blue",
     textDecorationLine: "underline",
     textAlign: "center",
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(80, 0,0, .80)", // adjust the color and opacity as needed
   },
 });
 

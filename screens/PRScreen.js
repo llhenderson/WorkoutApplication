@@ -16,13 +16,21 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
 import { clearAuth } from "../assets/StoreAndSlices/AuthSlice";
 import { selectUser } from "../assets/StoreAndSlices/UserSlice";
+import {
+  requestLocationPermission,
+  getLocation,
+  saveWorkoutWithLocation,
+} from "../components/locationService";
 
 const PRScreen = () => {
   const [exercise, setExercise] = useState();
   const [weight, setWeight] = useState();
   const [selectedOption, setSelectedOption] = useState(null);
-  const userID = useSelector(selectUser)[0];
+  const user_id = useSelector(selectUser)[0];
   const dispatch = useDispatch();
+
+  // databaseService.js
+
   const exerciseList = [
     { key: 1, value: "Bench" },
     { key: 2, value: "Squat" },
@@ -45,73 +53,29 @@ const PRScreen = () => {
     Alert.alert(
       "For verification purposes, only PR's submitted with a video recording will be shown on the leaderboard."
     );
-    () => setSelectedOption("Don't Record");
+    setSelectedOption("Don't Record");
   };
   const handleSumbit = async () => {
+    let workoutData = { weight, user_id, date: new Date().toISOString() };
     if (selectedOption === "Record") {
       console.log(2);
     } else {
       try {
         switch (exercise) {
           case "Bench":
-            console.log(userID);
-            const benchResponse = await fetch(
-              "http://10.0.2.2:3000/api/benchPR",
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ weight: weight, user_id: userID }),
-              }
-            );
-            const dataBench = await benchResponse.json();
-
-            if (benchResponse.ok) {
-              Alert.alert("Success", "PR Posted!");
-            } else {
-              Alert.alert("Error", dataBench.message);
-            }
+            await saveWorkoutWithLocation(workoutData, "benchPR");
+            setWeight();
+            Alert.alert("Workout Saved!");
             break;
           case "Squat":
-            console.log(userID);
-            const squatResponse = await fetch(
-              "http://10.0.2.2:3000/api/squatPR",
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ weight: weight, user_id: userID }),
-              }
-            );
-            const dataSquat = await squatResponse.json();
-
-            if (squatResponse.ok) {
-              Alert.alert("Success", "PR Posted!");
-            } else {
-              Alert.alert("Error", dataSquat.message);
-            }
+            await saveWorkoutWithLocation(workoutData, "squatPR");
+            setWeight();
+            Alert.alert("Workout Saved!");
             break;
           case "Deadlift":
-            console.log(userID);
-            const deadliftResponse = await fetch(
-              "http://10.0.2.2:3000/api/deadliftPR",
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ weight: weight, user_id: userID }),
-              }
-            );
-            const dataDeadlift = await deadliftResponse.json();
-
-            if (deadliftResponse.ok) {
-              Alert.alert("Success", "PR Posted!");
-            } else {
-              Alert.alert("Error", dataDeadlift.message);
-            }
+            await saveWorkoutWithLocation(workoutData, "deadliftPR");
+            setWeight();
+            Alert.alert("Workout Saved!");
             break;
           default:
             console.log("No valid option selected.");
