@@ -42,42 +42,77 @@ const generateToken = (user) => {
   return token; // Return the generated token
 };
 app.post("/api/benchPR", async (req, res) => {
-  const { weight, user_id } = req.body;
+  const { weight, user_id, latitude, longitude, date } = req.body;
 
   try {
-    // Insert a new record into benchPR table with user_id as a foreign key
-    const result = await pool.query(
-      "INSERT INTO bench_pr (weight, user_id) VALUES ($1, $2) RETURNING *",
-      [weight, user_id]
+    // Check if a bench PR record already exists for the user
+    const benchPRExists = await pool.query(
+      "SELECT * FROM bench_pr WHERE user_id = $1",
+      [user_id]
     );
 
+    let result;
+    if (benchPRExists.rows.length > 0) {
+      // Update the existing record
+      result = await pool.query(
+        "UPDATE bench_pr SET weight = $1, latitude = $2, longitude = $3, date = $4 WHERE user_id = $5 RETURNING *",
+        [weight, latitude, longitude, date, user_id]
+      );
+    } else {
+      // Insert a new record
+      result = await pool.query(
+        "INSERT INTO bench_pr (weight, user_id, latitude, longitude, date) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+        [weight, user_id, latitude, longitude, date]
+      );
+    }
+
     res.status(201).json({
-      message: "Bench PR added successfully",
+      message: "Bench PR recorded successfully",
       benchPR: result.rows[0],
     });
   } catch (error) {
-    if (error.code === "23503") {
-      // PostgreSQL error code for foreign key violation
-      res.status(400).json({ error: "Invalid user_id: User does not exist" });
-    } else {
-      console.error("Error inserting bench PR:", error);
-      res.status(500).json({ error: "Failed to add bench PR" });
-    }
+    console.error("Error handling bench PR:", error);
+    res.status(500).json({ error: "Failed to process bench PR" });
+  }
+});
+app.get("/api/leaderboard", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM bench_pr ORDER BY weight LIMIT 10"
+    );
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error retrieving leaderboard:", error);
+    res.status(500).json({ error: "Failed to retrieve leaderboard" });
   }
 });
 app.post("/api/squatPR", async (req, res) => {
-  const { weight, user_id } = req.body;
+  const { weight, user_id, latitude, longitude, date } = req.body;
 
+  // Check if a bench PR record already exists for the user
   try {
-    // Insert a new record into benchPR table with user_id as a foreign key
-    const result = await pool.query(
-      "INSERT INTO squat_pr (weight, user_id) VALUES ($1, $2) RETURNING *",
-      [weight, user_id]
+    const squatPRExists = await pool.query(
+      "SELECT * FROM squat_pr WHERE user_id = $1",
+      [user_id]
     );
+    let result;
+    if (squatPRExists.rows.length > 0) {
+      // Update the existing record
+      result = await pool.query(
+        "UPDATE squat_pr SET weight = $1, latitude = $2, longitude = $3, date = $4 WHERE user_id = $5 RETURNING *",
+        [weight, latitude, longitude, date, user_id]
+      );
+    } else {
+      // Insert a new record
+      result = await pool.query(
+        "INSERT INTO squat_pr (weight, user_id, latitude, longitude, date) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+        [weight, user_id, latitude, longitude, date]
+      );
+    }
 
     res.status(201).json({
-      message: "Squat PR added successfully",
-      SquatPR: result.rows[0],
+      message: "Squat PR recorded successfully",
+      squatPR: result.rows[0],
     });
   } catch (error) {
     if (error.code === "23503") {
@@ -90,18 +125,32 @@ app.post("/api/squatPR", async (req, res) => {
   }
 });
 app.post("/api/deadliftPR", async (req, res) => {
-  const { weight, user_id } = req.body;
-
+  const { weight, user_id, latitude, longitude, date } = req.body;
   try {
-    // Insert a new record into benchPR table with user_id as a foreign key
-    const result = await pool.query(
-      "INSERT INTO deadlift_pr (weight, user_id) VALUES ($1, $2) RETURNING *",
-      [weight, user_id]
+    // Check if a bench PR record already exists for the user
+    const deadliftPRExists = await pool.query(
+      "SELECT * FROM deadlift_pr WHERE user_id = $1",
+      [user_id]
     );
 
+    let result;
+    if (deadliftPRExists.rows.length > 0) {
+      // Update the existing record
+      result = await pool.query(
+        "UPDATE deadlift_pr SET weight = $1, latitude = $2, longitude = $3, date = $4 WHERE user_id = $5 RETURNING *",
+        [weight, latitude, longitude, date, user_id]
+      );
+    } else {
+      // Insert a new record
+      result = await pool.query(
+        "INSERT INTO deadlift_pr (weight, user_id, latitude, longitude, date) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+        [weight, user_id, latitude, longitude, date]
+      );
+    }
+
     res.status(201).json({
-      message: "deadlift PR added successfully",
-      deadliftPR: result.rows[0],
+      message: "deadlift PR recorded successfully",
+      benchPR: result.rows[0],
     });
   } catch (error) {
     if (error.code === "23503") {
